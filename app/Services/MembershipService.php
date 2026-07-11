@@ -1,0 +1,132 @@
+<?php
+
+namespace App\Services;
+
+use App\Enums\MembershipStatus;
+use App\Enums\PaymentStatus;
+use App\Models\Member;
+use App\Models\Membership;
+use App\Models\MembershipPayment;
+use App\Models\MembershipPlan;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+
+class MembershipService
+{
+    public function paginate(array $filters): LengthAwarePaginator
+    {
+        $this->markExpiredMemberships();
+
+        return Membership::query()
+            ->with(['member', 'plan', 'payments'])
+            ->when($filters['search'] ?? null, function ($query, string $search): void {
+                $query->whereHas('member', fn ($query) => $query
+                    ->where('name', 'like', "%{$search}%")
+                    ->orWhere('member_code', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%"));
+            })
+            ->when($filters['status'] ?? null, fn ($query, string $status) => $query->where('status', $status))
+            ->latest('expires_at')
+            ->paginate(15)
+            ->withQueryString();
+    }
+
+    public function renew(Member $member, array $data): Membership
+    {
+        return DB::transaction(function () use ($member, $data): Membership {
+            $plan = MembershipPlan::query()->findOrFail($data['membership_plan_id']);
+            $latestActiveMembership = $member->memberships()
+                ->where('status', MembershipStatus::Active->value)
+                ->whereDate('expires_at', '>=', now()->toDateString())
+                ->latest('expires_at')
+                ->first();
+
+            $defaultStartsAt = $latestActiveMembership
+                ? $latestActiveMembership->expires_at->copy()->addDay()
+                : now();
+
+            $startsAt = Carbon::parse($data['starts_at'] ?? $defaultStartsAt->toDateString());
+            $expiresAt = $startsAt->copy()->addDays($plan->duration_days - 1);
+
+            $member->memberships()
+                ->where('status', MembershipStatus::Active->value)
+                ->whereDate('expires_at', '>=', $startsAt->toDateString())
+                ->update(['status' => MembershipStatus::Expired->value]);
+
+            $membership = Membership::query()->create([
+                'member_id' => $member->id,
+                'membership_plan_id' => $plan->id,
+                'starts_at' => $startsAt,
+                'expires_at' => $expiresAt,
+                'price' => $data['price'] ?? $plan->price,
+                'status' => MembershipStatus::Active->value,
+                'notes' => $data['notes'] ?? null,
+                'created_by' => auth()->id(),
+            ]);
+
+            MembershipPayment::query()->create([
+                'membership_id' => $membership->id,
+                'amount' => $data['amount'] ?? $membership->price,
+                'paid_at' => $data['paid_at'] ?? null,
+                'method' => $data['method'] ?? 'bank_transfer',
+                'status' => PaymentStatus::Pending->value,
+                'notes' => $data['payment_notes'] ?? null,
+                'uploaded_by' => auth()->id(),
+                'proof_path' => isset($data['proof']) && $data['proof'] instanceof UploadedFile
+                    ? $data['proof']->store('payment-proofs', 'public')
+                    : null,
+            ]);
+
+            return $membership->load(['member', 'plan', 'payments']);
+        });
+    }
+
+    public function uploadProof(Membership $membership, array $data): MembershipPayment
+    {
+        return DB::transaction(function () use ($membership, $data): MembershipPayment {
+            $payment = $membership->payments()->latest()->firstOrFail();
+
+            if ($payment->proof_path) {
+                Storage::disk('public')->delete($payment->proof_path);
+            }
+
+            $payment->update([
+                'amount' => $data['amount'],
+                'paid_at' => $data['paid_at'],
+                'method' => $data['method'],
+                'proof_path' => $data['proof']->store('payment-proofs', 'public'),
+                'status' => PaymentStatus::Pending->value,
+                'notes' => $data['notes'] ?? null,
+                'uploaded_by' => auth()->id(),
+                'verified_by' => null,
+                'verified_at' => null,
+            ]);
+
+            return $payment->refresh();
+        });
+    }
+
+    public function verifyPayment(MembershipPayment $payment, PaymentStatus $status): MembershipPayment
+    {
+        return DB::transaction(function () use ($payment, $status): MembershipPayment {
+            $payment->update([
+                'status' => $status->value,
+                'verified_by' => auth()->id(),
+                'verified_at' => now(),
+            ]);
+
+            return $payment->refresh();
+        });
+    }
+
+    public function markExpiredMemberships(): int
+    {
+        return Membership::query()
+            ->where('status', MembershipStatus::Active->value)
+            ->whereDate('expires_at', '<', now()->toDateString())
+            ->update(['status' => MembershipStatus::Expired->value]);
+    }
+}
