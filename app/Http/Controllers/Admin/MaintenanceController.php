@@ -61,6 +61,14 @@ class MaintenanceController extends Controller
         return redirect()->route('maintenances.index')->with('status', 'Maintenance updated successfully.');
     }
 
+    public function complete(AssetMaintenance $maintenance, MaintenanceService $service): RedirectResponse
+    {
+        $this->authorize('update', $maintenance);
+        $service->complete($maintenance);
+
+        return back()->with('status', 'Maintenance completed successfully.');
+    }
+
     public function destroy(AssetMaintenance $maintenance, MaintenanceService $service): RedirectResponse
     {
         $this->authorize('delete', $maintenance);

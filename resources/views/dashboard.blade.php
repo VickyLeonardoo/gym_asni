@@ -12,7 +12,7 @@
                 ['label' => 'Members', 'value' => $total_members, 'icon' => 'bi-people'],
                 ['label' => 'Active Memberships', 'value' => $active_memberships, 'icon' => 'bi-person-check'],
                 ['label' => 'Expired Memberships', 'value' => $expired_memberships, 'icon' => 'bi-person-x'],
-                ['label' => 'Pending Payments', 'value' => $pending_payments, 'icon' => 'bi-receipt'],
+                ['label' => 'Pending Transactions', 'value' => $pending_transactions, 'icon' => 'bi-receipt'],
                 ['label' => 'Assets', 'value' => $total_assets, 'icon' => 'bi-box-seam'],
                 ['label' => 'In Maintenance', 'value' => $maintenance_assets, 'icon' => 'bi-tools'],
                 ['label' => 'Poor/Broken Assets', 'value' => $poor_assets, 'icon' => 'bi-exclamation-triangle'],

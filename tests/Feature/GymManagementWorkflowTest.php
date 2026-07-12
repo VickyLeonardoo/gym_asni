@@ -108,15 +108,13 @@ class GymManagementWorkflowTest extends TestCase
         $maintenanceResponse->assertRedirect(route('assets.show', $asset));
         $this->assertSame(AssetStatus::Maintenance, $asset->refresh()->status);
 
-        $this->actingAs($admin)->put(route('maintenances.update', $maintenance), [
-            'scheduled_at' => '2026-07-04',
-            'completed_at' => '2026-07-04',
-            'status' => MaintenanceStatus::Completed->value,
-            'cost' => 125000,
-            'description' => 'Monthly belt inspection.',
-            'resolution' => 'Belt tension adjusted.',
-        ])->assertRedirect(route('maintenances.index'));
+        $this->actingAs($admin)
+            ->patch(route('maintenances.complete', $maintenance))
+            ->assertRedirect();
 
         $this->assertSame(AssetStatus::Available, $asset->refresh()->status);
+        $this->assertSame(MaintenanceStatus::Completed, $maintenance->refresh()->status);
+        $this->assertNotNull($maintenance->completed_at);
+        $this->assertSame($maintenance->completed_at->toDateString(), $asset->lastMaintenanceDate()->toDateString());
     }
 }

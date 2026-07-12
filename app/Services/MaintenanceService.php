@@ -45,6 +45,20 @@ class MaintenanceService
         });
     }
 
+    public function complete(AssetMaintenance $maintenance): AssetMaintenance
+    {
+        return DB::transaction(function () use ($maintenance): AssetMaintenance {
+            $maintenance->update([
+                'status' => MaintenanceStatus::Completed->value,
+                'completed_at' => $maintenance->completed_at ?? now()->toDateString(),
+            ]);
+
+            $maintenance->asset->update(['status' => AssetStatus::Available->value]);
+
+            return $maintenance->refresh();
+        });
+    }
+
     public function delete(AssetMaintenance $maintenance): void
     {
         DB::transaction(fn () => $maintenance->delete());

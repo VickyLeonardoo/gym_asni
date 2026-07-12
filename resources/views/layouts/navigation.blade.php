@@ -24,11 +24,11 @@
                     <x-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.*')">
                         {{ __('Transactions') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('payments.index')" :active="request()->routeIs('payments.*')">
-                        {{ __('Payments') }}
-                    </x-nav-link>
                     <x-nav-link :href="route('assets.index')" :active="request()->routeIs('assets.*') || request()->routeIs('maintenances.*')">
                         {{ __('Assets') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('service-contacts.index')" :active="request()->routeIs('service-contacts.*')">
+                        {{ __('Service Contacts') }}
                     </x-nav-link>
                     <x-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.*')">
                         {{ __('Reports') }}
@@ -102,11 +102,11 @@
             <x-responsive-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.*')">
                 {{ __('Transactions') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('payments.index')" :active="request()->routeIs('payments.*')">
-                {{ __('Payments') }}
-            </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('assets.index')" :active="request()->routeIs('assets.*') || request()->routeIs('maintenances.*')">
                 {{ __('Assets') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('service-contacts.index')" :active="request()->routeIs('service-contacts.*')">
+                {{ __('Service Contacts') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.*')">
                 {{ __('Reports') }}

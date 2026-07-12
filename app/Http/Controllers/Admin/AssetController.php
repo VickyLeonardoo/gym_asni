@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Asset\StoreAssetRequest;
 use App\Http\Requests\Asset\UpdateAssetRequest;
 use App\Models\Asset;
+use App\Models\ServiceContact;
 use App\Services\AssetService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -30,7 +31,11 @@ class AssetController extends Controller
     {
         $this->authorize('create', Asset::class);
 
-        return view('assets.create', ['statuses' => AssetStatus::cases(), 'conditions' => AssetCondition::cases()]);
+        return view('assets.create', [
+            'statuses' => AssetStatus::cases(),
+            'conditions' => AssetCondition::cases(),
+            'serviceContacts' => ServiceContact::query()->orderBy('name')->get(),
+        ]);
     }
 
     public function store(StoreAssetRequest $request, AssetService $service): RedirectResponse
@@ -53,7 +58,12 @@ class AssetController extends Controller
     {
         $this->authorize('update', $asset);
 
-        return view('assets.edit', ['asset' => $asset, 'statuses' => AssetStatus::cases(), 'conditions' => AssetCondition::cases()]);
+        return view('assets.edit', [
+            'asset' => $asset,
+            'statuses' => AssetStatus::cases(),
+            'conditions' => AssetCondition::cases(),
+            'serviceContacts' => ServiceContact::query()->orderBy('name')->get(),
+        ]);
     }
 
     public function update(UpdateAssetRequest $request, Asset $asset, AssetService $service): RedirectResponse

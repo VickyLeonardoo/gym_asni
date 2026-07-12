@@ -9,7 +9,7 @@ use App\Models\Asset;
 use App\Models\AssetMaintenance;
 use App\Models\Member;
 use App\Models\Membership;
-use App\Models\MembershipPayment;
+use App\Models\MembershipTransaction;
 
 class DashboardService
 {
@@ -19,7 +19,7 @@ class DashboardService
             'total_members' => Member::query()->count(),
             'active_memberships' => Membership::query()->where('status', MembershipStatus::Active->value)->count(),
             'expired_memberships' => Membership::query()->where('status', MembershipStatus::Expired->value)->count(),
-            'pending_payments' => MembershipPayment::query()->where('status', 'pending')->count(),
+            'pending_transactions' => MembershipTransaction::query()->where('status', 'pending')->count(),
             'total_assets' => Asset::query()->count(),
             'maintenance_assets' => Asset::query()->where('status', AssetStatus::Maintenance->value)->count(),
             'poor_assets' => Asset::query()->whereIn('condition', [AssetCondition::Poor->value, AssetCondition::Broken->value])->count(),

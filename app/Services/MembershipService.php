@@ -12,7 +12,6 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class MembershipService
 {
@@ -81,44 +80,6 @@ class MembershipService
             ]);
 
             return $membership->load(['member', 'plan', 'payments']);
-        });
-    }
-
-    public function uploadProof(Membership $membership, array $data): MembershipPayment
-    {
-        return DB::transaction(function () use ($membership, $data): MembershipPayment {
-            $payment = $membership->payments()->latest()->firstOrFail();
-
-            if ($payment->proof_path) {
-                Storage::disk('public')->delete($payment->proof_path);
-            }
-
-            $payment->update([
-                'amount' => $data['amount'],
-                'paid_at' => $data['paid_at'],
-                'method' => $data['method'],
-                'proof_path' => $data['proof']->store('payment-proofs', 'public'),
-                'status' => PaymentStatus::Pending->value,
-                'notes' => $data['notes'] ?? null,
-                'uploaded_by' => auth()->id(),
-                'verified_by' => null,
-                'verified_at' => null,
-            ]);
-
-            return $payment->refresh();
-        });
-    }
-
-    public function verifyPayment(MembershipPayment $payment, PaymentStatus $status): MembershipPayment
-    {
-        return DB::transaction(function () use ($payment, $status): MembershipPayment {
-            $payment->update([
-                'status' => $status->value,
-                'verified_by' => auth()->id(),
-                'verified_at' => now(),
-            ]);
-
-            return $payment->refresh();
         });
     }
 

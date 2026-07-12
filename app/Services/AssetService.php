@@ -66,6 +66,10 @@ class AssetService
 
     private function syncReferences(array $data): array
     {
+        if (array_key_exists('service_contact_id', $data)) {
+            unset($data['service_contact_name']);
+        }
+
         foreach ([
             'purchase_store_name' => [PurchaseStore::class, 'purchase_store_id'],
             'supplier_name' => [Supplier::class, 'supplier_id'],

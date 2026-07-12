@@ -26,6 +26,7 @@ class UpdateAssetRequest extends FormRequest
             'purchase_store_name' => ['nullable', 'string', 'max:255'],
             'supplier_name' => ['nullable', 'string', 'max:255'],
             'service_contact_name' => ['nullable', 'string', 'max:255'],
+            'service_contact_id' => ['nullable', 'exists:service_contacts,id'],
             'purchase_date' => ['nullable', 'date'],
             'purchase_price' => ['nullable', 'numeric', 'min:0'],
             'warranty_expires_at' => ['nullable', 'date', 'after_or_equal:purchase_date'],
