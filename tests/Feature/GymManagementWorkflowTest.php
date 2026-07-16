@@ -128,5 +128,17 @@ class GymManagementWorkflowTest extends TestCase
         $this->assertSame(MaintenanceStatus::Completed, $maintenance->refresh()->status);
         $this->assertNotNull($maintenance->completed_at);
         $this->assertSame($maintenance->completed_at->toDateString(), $asset->lastMaintenanceDate()->toDateString());
+
+        $this->actingAs($admin)
+            ->delete(route('assets.destroy', $asset))
+            ->assertRedirect(route('assets.index'));
+
+        $this->assertSoftDeleted('assets', ['id' => $asset->id]);
+
+        $this->actingAs($admin)
+            ->patch(route('assets.restore', $asset->id))
+            ->assertRedirect(route('assets.archived'));
+
+        $this->assertFalse($asset->refresh()->trashed());
     }
 }

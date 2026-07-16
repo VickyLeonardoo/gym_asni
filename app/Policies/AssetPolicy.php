@@ -31,4 +31,9 @@ class AssetPolicy
     {
         return $user->is_active;
     }
+
+    public function restore(User $user, Asset $asset): bool
+    {
+        return $user->is_active;
+    }
 }

@@ -38,6 +38,8 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('transactions/create', [MembershipTransactionController::class, 'create'])->name('transactions.create');
     Route::post('transactions', [MembershipTransactionController::class, 'store'])->name('transactions.store');
     Route::patch('transactions/{transaction}/verify', [MembershipTransactionController::class, 'verify'])->name('transactions.verify');
+    Route::get('assets/archived', [AssetController::class, 'archived'])->name('assets.archived');
+    Route::patch('assets/{asset}/restore', [AssetController::class, 'restore'])->name('assets.restore');
     Route::resource('assets', AssetController::class);
     Route::get('assets/{asset}/maintenances/create', [MaintenanceController::class, 'create'])->name('maintenances.create');
     Route::post('assets/{asset}/maintenances', [MaintenanceController::class, 'store'])->name('maintenances.store');

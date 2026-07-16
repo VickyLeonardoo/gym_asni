@@ -27,6 +27,17 @@ class AssetController extends Controller
         ]);
     }
 
+    public function archived(Request $request, AssetService $service): View
+    {
+        $this->authorize('viewAny', Asset::class);
+
+        return view('assets.archived', [
+            'assets' => $service->paginateArchived($request->only(['search', 'status', 'condition'])),
+            'statuses' => AssetStatus::cases(),
+            'conditions' => AssetCondition::cases(),
+        ]);
+    }
+
     public function create(): View
     {
         $this->authorize('create', Asset::class);
@@ -78,6 +89,15 @@ class AssetController extends Controller
         $this->authorize('delete', $asset);
         $service->delete($asset);
 
-        return redirect()->route('assets.index')->with('status', 'Asset deleted successfully.');
+        return redirect()->route('assets.index')->with('status', 'Asset archived successfully.');
+    }
+
+    public function restore(string $asset, AssetService $service): RedirectResponse
+    {
+        $asset = Asset::withTrashed()->findOrFail($asset);
+        $this->authorize('restore', $asset);
+        $service->restore($asset);
+
+        return redirect()->route('assets.archived')->with('status', 'Asset restored successfully.');
     }
 }

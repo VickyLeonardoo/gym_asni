@@ -23,6 +23,18 @@ class AssetService
             ->withQueryString();
     }
 
+    public function paginateArchived(array $filters): LengthAwarePaginator
+    {
+        return Asset::onlyTrashed()
+            ->with(['purchaseStore', 'supplier', 'serviceContact', 'maintenances'])
+            ->search($filters['search'] ?? null)
+            ->when($filters['status'] ?? null, fn ($query, string $status) => $query->where('status', $status))
+            ->when($filters['condition'] ?? null, fn ($query, string $condition) => $query->where('condition', $condition))
+            ->latest('deleted_at')
+            ->paginate(15)
+            ->withQueryString();
+    }
+
     public function create(array $data): Asset
     {
         return DB::transaction(function () use ($data): Asset {
@@ -62,6 +74,15 @@ class AssetService
     public function delete(Asset $asset): void
     {
         DB::transaction(fn () => $asset->delete());
+    }
+
+    public function restore(Asset $asset): Asset
+    {
+        return DB::transaction(function () use ($asset): Asset {
+            $asset->restore();
+
+            return $asset->refresh();
+        });
     }
 
     private function syncReferences(array $data): array
