@@ -78,6 +78,18 @@ class GymManagementWorkflowTest extends TestCase
         $this->assertSame(MembershipStatus::Active, $latestMembership->status);
         $this->assertSame(PaymentStatus::Verified, $latestMembership->payments->first()->status);
         Storage::disk('public')->assertExists($latestMembership->payments->first()->proof_path);
+
+        $this->actingAs($admin)
+            ->delete(route('members.destroy', $member))
+            ->assertRedirect(route('members.index'));
+
+        $this->assertSoftDeleted('members', ['id' => $member->id]);
+
+        $this->actingAs($admin)
+            ->patch(route('members.restore', $member->id))
+            ->assertRedirect(route('members.archived'));
+
+        $this->assertFalse($member->refresh()->trashed());
     }
 
     public function test_admin_can_create_asset_and_complete_maintenance(): void

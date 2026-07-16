@@ -28,6 +28,16 @@ class MemberService
             ->withQueryString();
     }
 
+    public function paginateArchived(array $filters): LengthAwarePaginator
+    {
+        return Member::onlyTrashed()
+            ->with(['latestMembership.plan', 'latestMembership.payments'])
+            ->search($filters['search'] ?? null)
+            ->latest('deleted_at')
+            ->paginate(15)
+            ->withQueryString();
+    }
+
     public function create(array $data): Member
     {
         return DB::transaction(function () use ($data): Member {
@@ -51,6 +61,15 @@ class MemberService
     public function delete(Member $member): void
     {
         DB::transaction(fn () => $member->delete());
+    }
+
+    public function restore(Member $member): Member
+    {
+        return DB::transaction(function () use ($member): Member {
+            $member->restore();
+
+            return $member->refresh();
+        });
     }
 
     private function nextMemberCode(): string

@@ -26,6 +26,8 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
     Route::resource('users', UserController::class)->except(['show']);
+    Route::get('members/archived', [MemberController::class, 'archived'])->name('members.archived');
+    Route::patch('members/{member}/restore', [MemberController::class, 'restore'])->name('members.restore');
     Route::resource('members', MemberController::class);
     Route::get('members/{member}/renew', [MembershipController::class, 'create'])->name('memberships.create');
     Route::post('members/{member}/renew', [MembershipController::class, 'store'])->name('memberships.store');

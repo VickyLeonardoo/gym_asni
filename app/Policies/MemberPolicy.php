@@ -31,4 +31,9 @@ class MemberPolicy
     {
         return $user->is_active;
     }
+
+    public function restore(User $user, Member $member): bool
+    {
+        return $user->is_active;
+    }
 }
