@@ -20,7 +20,7 @@ class UpdateMaintenanceRequest extends FormRequest
             'scheduled_at' => ['required', 'date'],
             'completed_at' => ['nullable', 'date', 'after_or_equal:scheduled_at'],
             'status' => ['required', Rule::enum(MaintenanceStatus::class)],
-            'cost' => ['nullable', 'numeric', 'min:0'],
+            'cost' => ['exclude_unless:status,'.MaintenanceStatus::Completed->value, 'required_if:status,'.MaintenanceStatus::Completed->value, 'numeric', 'min:0'],
             'description' => ['required', 'string', 'max:2000'],
             'resolution' => ['nullable', 'string', 'max:2000'],
         ];

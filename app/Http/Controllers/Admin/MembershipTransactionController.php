@@ -59,7 +59,7 @@ class MembershipTransactionController extends Controller
             ? $service->createRenewal(Member::query()->findOrFail($data['member_id']), $data)
             : $service->createRegistration($data);
 
-        return redirect()->route('transactions.index')->with('status', "Transaction #{$transaction->id} created.");
+        return redirect()->route('transactions.index')->with('status', "Transaksi #{$transaction->id} berhasil dibuat.");
     }
 
     public function verify(MembershipTransaction $transaction, MembershipTransactionService $service): RedirectResponse
@@ -69,7 +69,7 @@ class MembershipTransactionController extends Controller
         $status = request()->boolean('reject') ? PaymentStatus::Rejected : PaymentStatus::Verified;
         $service->verify($transaction, $status);
 
-        return back()->with('status', 'Transaction status updated successfully.');
+        return back()->with('status', 'Status transaksi berhasil diperbarui.');
     }
 
     private function suggestedStartsAt(?Member $member): string

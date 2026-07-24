@@ -40,7 +40,7 @@ class ServiceContactController extends Controller
     {
         ServiceContact::query()->create($request->validated());
 
-        return redirect()->route('service-contacts.index')->with('status', 'Service contact created successfully.');
+        return redirect()->route('service-contacts.index')->with('status', 'Kontak servis berhasil dibuat.');
     }
 
     public function edit(ServiceContact $serviceContact): View
@@ -54,7 +54,7 @@ class ServiceContactController extends Controller
     {
         $serviceContact->update($request->validated());
 
-        return redirect()->route('service-contacts.index')->with('status', 'Service contact updated successfully.');
+        return redirect()->route('service-contacts.index')->with('status', 'Kontak servis berhasil diperbarui.');
     }
 
     public function destroy(ServiceContact $serviceContact): RedirectResponse
@@ -62,6 +62,6 @@ class ServiceContactController extends Controller
         $this->authorize('delete', $serviceContact);
         $serviceContact->delete();
 
-        return redirect()->route('service-contacts.index')->with('status', 'Service contact deleted successfully.');
+        return redirect()->route('service-contacts.index')->with('status', 'Kontak servis berhasil dihapus.');
     }
 }

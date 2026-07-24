@@ -141,8 +141,8 @@ class MembershipTransactionService
         return [
             'membership_plan_id' => $plan->id,
             'starts_at' => $startsAt,
-            'price' => $data['price'] ?? $plan->price,
-            'amount' => $data['amount'] ?? ($data['price'] ?? $plan->price),
+            'price' => $plan->price,
+            'amount' => $data['amount'],
             'paid_at' => $data['paid_at'] ?? null,
             'method' => $data['method'] ?? 'bank_transfer',
             'proof_path' => isset($data['proof']) && $data['proof'] instanceof UploadedFile

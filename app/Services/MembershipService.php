@@ -60,7 +60,7 @@ class MembershipService
                 'membership_plan_id' => $plan->id,
                 'starts_at' => $startsAt,
                 'expires_at' => $expiresAt,
-                'price' => $data['price'] ?? $plan->price,
+                'price' => $plan->price,
                 'status' => MembershipStatus::Active->value,
                 'notes' => $data['notes'] ?? null,
                 'created_by' => auth()->id(),
@@ -68,7 +68,7 @@ class MembershipService
 
             MembershipPayment::query()->create([
                 'membership_id' => $membership->id,
-                'amount' => $data['amount'] ?? $membership->price,
+                'amount' => $data['amount'],
                 'paid_at' => $data['paid_at'] ?? null,
                 'method' => $data['method'] ?? 'bank_transfer',
                 'status' => PaymentStatus::Pending->value,

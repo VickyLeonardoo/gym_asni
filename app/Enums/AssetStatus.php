@@ -11,6 +11,11 @@ enum AssetStatus: string
 
     public function label(): string
     {
-        return str($this->value)->replace('_', ' ')->title()->toString();
+        return match ($this) {
+            self::Available => 'Tersedia',
+            self::InUse => 'Digunakan',
+            self::Maintenance => 'Maintenance',
+            self::Retired => 'Pensiun',
+        };
     }
 }

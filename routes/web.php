@@ -45,6 +45,7 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::post('assets/{asset}/maintenances', [MaintenanceController::class, 'store'])->name('maintenances.store');
     Route::get('maintenances', [MaintenanceController::class, 'index'])->name('maintenances.index');
     Route::get('maintenances/{maintenance}/edit', [MaintenanceController::class, 'edit'])->name('maintenances.edit');
+    Route::get('maintenances/{maintenance}/complete', [MaintenanceController::class, 'completeForm'])->name('maintenances.complete-form');
     Route::patch('maintenances/{maintenance}/complete', [MaintenanceController::class, 'complete'])->name('maintenances.complete');
     Route::put('maintenances/{maintenance}', [MaintenanceController::class, 'update'])->name('maintenances.update');
     Route::delete('maintenances/{maintenance}', [MaintenanceController::class, 'destroy'])->name('maintenances.destroy');

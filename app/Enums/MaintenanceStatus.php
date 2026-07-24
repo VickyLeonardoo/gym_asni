@@ -11,6 +11,11 @@ enum MaintenanceStatus: string
 
     public function label(): string
     {
-        return str($this->value)->replace('_', ' ')->title()->toString();
+        return match ($this) {
+            self::Scheduled => 'Terjadwal',
+            self::InProgress => 'Berjalan',
+            self::Completed => 'Selesai',
+            self::Cancelled => 'Dibatalkan',
+        };
     }
 }

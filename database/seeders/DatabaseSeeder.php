@@ -50,9 +50,9 @@ class DatabaseSeeder extends Seeder
         );
 
         collect([
-            ['name' => 'Monthly', 'duration_days' => 30, 'price' => 250000, 'description' => 'Standard 30-day gym membership.'],
-            ['name' => 'Quarterly', 'duration_days' => 90, 'price' => 675000, 'description' => 'Three-month membership package.'],
-            ['name' => 'Annual', 'duration_days' => 365, 'price' => 2400000, 'description' => 'Best value annual membership.'],
+            ['name' => 'Bulanan', 'duration_days' => 30, 'price' => 250000, 'description' => 'Paket membership gym standar untuk 30 hari.'],
+            ['name' => 'Triwulan', 'duration_days' => 90, 'price' => 675000, 'description' => 'Paket membership gym untuk tiga bulan.'],
+            ['name' => 'Tahunan', 'duration_days' => 365, 'price' => 2400000, 'description' => 'Paket membership tahunan dengan harga terbaik.'],
         ])->each(fn (array $plan) => MembershipPlan::query()->updateOrCreate(['name' => $plan['name']], $plan));
 
         $purchaseStores = collect([
@@ -139,14 +139,14 @@ class DatabaseSeeder extends Seeder
         $adminId = User::query()->where('email', 'admin@asni.test')->value('id');
 
         collect([
-            ['name' => 'Raka Pratama', 'email' => 'raka.pratama@example.test', 'phone' => '0812-3100-1001', 'date_of_birth' => '1996-04-12', 'gender' => 'male', 'address' => 'Jl. Melati No. 18, Jakarta', 'emergency_contact' => 'Dina - 0812-9000-1101', 'plan' => 'Monthly', 'starts_at' => '2026-07-10', 'paid_at' => '2026-07-09', 'method' => 'bank_transfer', 'payment_notes' => 'Transfer BCA atas nama Raka Pratama.'],
-            ['name' => 'Nadia Lestari', 'email' => 'nadia.lestari@example.test', 'phone' => '0812-3100-1002', 'date_of_birth' => '1998-09-24', 'gender' => 'female', 'address' => 'Jl. Kenanga No. 5, Tangerang', 'emergency_contact' => 'Mira - 0812-9000-1102', 'plan' => 'Quarterly', 'starts_at' => '2026-07-11', 'paid_at' => '2026-07-09', 'method' => 'qris', 'payment_notes' => 'QRIS pending verification.'],
-            ['name' => 'Bima Saputra', 'email' => 'bima.saputra@example.test', 'phone' => '0812-3100-1003', 'date_of_birth' => '1993-12-03', 'gender' => 'male', 'address' => 'Jl. Anggrek No. 42, Bekasi', 'emergency_contact' => 'Reno - 0812-9000-1103', 'plan' => 'Monthly', 'starts_at' => '2026-07-12', 'paid_at' => '2026-07-09', 'method' => 'cash', 'payment_notes' => 'Cash diterima front desk.'],
-            ['name' => 'Salsa Maharani', 'email' => 'salsa.maharani@example.test', 'phone' => '0812-3100-1004', 'date_of_birth' => '2000-02-18', 'gender' => 'female', 'address' => 'Jl. Cempaka No. 9, Depok', 'emergency_contact' => 'Ayu - 0812-9000-1104', 'plan' => 'Annual', 'starts_at' => '2026-07-15', 'paid_at' => '2026-07-09', 'method' => 'bank_transfer', 'payment_notes' => 'Transfer Mandiri annual package.'],
-            ['name' => 'Dimas Nugroho', 'email' => 'dimas.nugroho@example.test', 'phone' => '0812-3100-1005', 'date_of_birth' => '1991-06-30', 'gender' => 'male', 'address' => 'Jl. Mawar No. 77, Jakarta', 'emergency_contact' => 'Putri - 0812-9000-1105', 'plan' => 'Quarterly', 'starts_at' => '2026-07-16', 'paid_at' => '2026-07-09', 'method' => 'debit_card', 'payment_notes' => 'Debit card receipt stored offline.'],
-            ['name' => 'Clara Wijaya', 'email' => 'clara.wijaya@example.test', 'phone' => '0812-3100-1006', 'date_of_birth' => '1997-08-07', 'gender' => 'female', 'address' => 'Jl. Flamboyan No. 14, Bandung', 'emergency_contact' => 'Hendra - 0812-9000-1106', 'plan' => 'Monthly', 'starts_at' => '2026-07-17', 'paid_at' => '2026-07-09', 'method' => 'bank_transfer', 'payment_notes' => 'Transfer BNI atas nama Clara.'],
-            ['name' => 'Arman Hakim', 'email' => 'arman.hakim@example.test', 'phone' => '0812-3100-1007', 'date_of_birth' => '1989-11-21', 'gender' => 'male', 'address' => 'Jl. Teratai No. 3, Bogor', 'emergency_contact' => 'Sari - 0812-9000-1107', 'plan' => 'Annual', 'starts_at' => '2026-07-20', 'paid_at' => '2026-07-09', 'method' => 'bank_transfer', 'payment_notes' => 'Annual member candidate.'],
-            ['name' => 'Maya Putri', 'email' => 'maya.putri@example.test', 'phone' => '0812-3100-1008', 'date_of_birth' => '1995-03-05', 'gender' => 'female', 'address' => 'Jl. Sakura No. 26, Jakarta', 'emergency_contact' => 'Rani - 0812-9000-1108', 'plan' => 'Monthly', 'starts_at' => '2026-07-21', 'paid_at' => '2026-07-09', 'method' => 'qris', 'payment_notes' => 'QRIS screenshot not uploaded yet.'],
+            ['name' => 'Raka Pratama', 'email' => 'raka.pratama@example.test', 'phone' => '0812-3100-1001', 'date_of_birth' => '1996-04-12', 'gender' => 'male', 'address' => 'Jl. Melati No. 18, Jakarta', 'emergency_contact' => 'Dina - 0812-9000-1101', 'plan' => 'Bulanan', 'starts_at' => '2026-07-10', 'paid_at' => '2026-07-09', 'method' => 'bank_transfer', 'payment_notes' => 'Transfer BCA atas nama Raka Pratama.'],
+            ['name' => 'Nadia Lestari', 'email' => 'nadia.lestari@example.test', 'phone' => '0812-3100-1002', 'date_of_birth' => '1998-09-24', 'gender' => 'female', 'address' => 'Jl. Kenanga No. 5, Tangerang', 'emergency_contact' => 'Mira - 0812-9000-1102', 'plan' => 'Triwulan', 'starts_at' => '2026-07-11', 'paid_at' => '2026-07-09', 'method' => 'qris', 'payment_notes' => 'QRIS menunggu verifikasi.'],
+            ['name' => 'Bima Saputra', 'email' => 'bima.saputra@example.test', 'phone' => '0812-3100-1003', 'date_of_birth' => '1993-12-03', 'gender' => 'male', 'address' => 'Jl. Anggrek No. 42, Bekasi', 'emergency_contact' => 'Reno - 0812-9000-1103', 'plan' => 'Bulanan', 'starts_at' => '2026-07-12', 'paid_at' => '2026-07-09', 'method' => 'cash', 'payment_notes' => 'Tunai diterima front desk.'],
+            ['name' => 'Salsa Maharani', 'email' => 'salsa.maharani@example.test', 'phone' => '0812-3100-1004', 'date_of_birth' => '2000-02-18', 'gender' => 'female', 'address' => 'Jl. Cempaka No. 9, Depok', 'emergency_contact' => 'Ayu - 0812-9000-1104', 'plan' => 'Tahunan', 'starts_at' => '2026-07-15', 'paid_at' => '2026-07-09', 'method' => 'bank_transfer', 'payment_notes' => 'Transfer Mandiri paket tahunan.'],
+            ['name' => 'Dimas Nugroho', 'email' => 'dimas.nugroho@example.test', 'phone' => '0812-3100-1005', 'date_of_birth' => '1991-06-30', 'gender' => 'male', 'address' => 'Jl. Mawar No. 77, Jakarta', 'emergency_contact' => 'Putri - 0812-9000-1105', 'plan' => 'Triwulan', 'starts_at' => '2026-07-16', 'paid_at' => '2026-07-09', 'method' => 'debit_card', 'payment_notes' => 'Struk kartu debit disimpan offline.'],
+            ['name' => 'Clara Wijaya', 'email' => 'clara.wijaya@example.test', 'phone' => '0812-3100-1006', 'date_of_birth' => '1997-08-07', 'gender' => 'female', 'address' => 'Jl. Flamboyan No. 14, Bandung', 'emergency_contact' => 'Hendra - 0812-9000-1106', 'plan' => 'Bulanan', 'starts_at' => '2026-07-17', 'paid_at' => '2026-07-09', 'method' => 'bank_transfer', 'payment_notes' => 'Transfer BNI atas nama Clara.'],
+            ['name' => 'Arman Hakim', 'email' => 'arman.hakim@example.test', 'phone' => '0812-3100-1007', 'date_of_birth' => '1989-11-21', 'gender' => 'male', 'address' => 'Jl. Teratai No. 3, Bogor', 'emergency_contact' => 'Sari - 0812-9000-1107', 'plan' => 'Tahunan', 'starts_at' => '2026-07-20', 'paid_at' => '2026-07-09', 'method' => 'bank_transfer', 'payment_notes' => 'Kandidat member paket tahunan.'],
+            ['name' => 'Maya Putri', 'email' => 'maya.putri@example.test', 'phone' => '0812-3100-1008', 'date_of_birth' => '1995-03-05', 'gender' => 'female', 'address' => 'Jl. Sakura No. 26, Jakarta', 'emergency_contact' => 'Rani - 0812-9000-1108', 'plan' => 'Bulanan', 'starts_at' => '2026-07-21', 'paid_at' => '2026-07-09', 'method' => 'qris', 'payment_notes' => 'Screenshot QRIS belum diunggah.'],
         ])->each(function (array $transaction) use ($plans, $adminId): void {
             $plan = $plans[$transaction['plan']];
 
@@ -171,7 +171,7 @@ class DatabaseSeeder extends Seeder
                     'method' => $transaction['method'],
                     'proof_path' => null,
                     'status' => PaymentStatus::Pending->value,
-                    'notes' => 'Seeded pending new member transaction.',
+                    'notes' => 'Seeder transaksi member baru yang masih menunggu verifikasi.',
                     'payment_notes' => $transaction['payment_notes'],
                     'created_by' => $adminId,
                     'verified_by' => null,

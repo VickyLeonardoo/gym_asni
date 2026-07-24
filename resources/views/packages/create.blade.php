@@ -1,9 +1,9 @@
 <x-app-layout>
-    <x-slot name="header"><h2 class="text-xl font-semibold text-gray-800">Add Package</h2></x-slot>
+    <x-slot name="header"><h2 class="text-xl font-semibold text-gray-800">Tambah Paket</h2></x-slot>
 
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <form method="POST" action="{{ route('packages.store') }}" class="rounded-md border bg-white p-6 space-y-4">
-            @include('packages._form', ['submit' => 'Create Package'])
+            @include('packages._form', ['submit' => 'Buat Paket'])
         </form>
     </div>
 </x-app-layout>

@@ -10,6 +10,10 @@ enum MembershipStatus: string
 
     public function label(): string
     {
-        return ucfirst($this->value);
+        return match ($this) {
+            self::Active => 'Aktif',
+            self::Expired => 'Kedaluwarsa',
+            self::Cancelled => 'Dibatalkan',
+        };
     }
 }

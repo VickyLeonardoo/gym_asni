@@ -24,9 +24,13 @@ class MaintenanceService
     public function create(Asset $asset, array $data): AssetMaintenance
     {
         return DB::transaction(function () use ($asset, $data): AssetMaintenance {
+            unset($data['cost'], $data['completed_at'], $data['resolution']);
             $data['created_by'] = auth()->id();
             $maintenance = $asset->maintenances()->create($data);
-            $asset->update(['status' => AssetStatus::Maintenance->value]);
+
+            if ($maintenance->scheduled_at->isToday() || $maintenance->scheduled_at->isPast()) {
+                $asset->update(['status' => AssetStatus::Maintenance->value]);
+            }
 
             return $maintenance;
         });
@@ -45,18 +49,45 @@ class MaintenanceService
         });
     }
 
-    public function complete(AssetMaintenance $maintenance): AssetMaintenance
+    public function complete(AssetMaintenance $maintenance, array $data): AssetMaintenance
     {
-        return DB::transaction(function () use ($maintenance): AssetMaintenance {
+        return DB::transaction(function () use ($maintenance, $data): AssetMaintenance {
             $maintenance->update([
                 'status' => MaintenanceStatus::Completed->value,
-                'completed_at' => $maintenance->completed_at ?? now()->toDateString(),
+                'completed_at' => $data['completed_at'],
+                'cost' => $data['cost'],
+                'resolution' => $data['resolution'],
             ]);
 
             $maintenance->asset->update(['status' => AssetStatus::Available->value]);
+            $this->scheduleNextRoutineMaintenance($maintenance->refresh());
 
             return $maintenance->refresh();
         });
+    }
+
+    private function scheduleNextRoutineMaintenance(AssetMaintenance $maintenance): void
+    {
+        $asset = $maintenance->asset;
+
+        if (! $asset->maintenance_interval_months) {
+            return;
+        }
+
+        $nextDate = $maintenance->completed_at->copy()->addMonths($asset->maintenance_interval_months);
+        $alreadyScheduled = $asset->maintenances()
+            ->whereIn('status', [MaintenanceStatus::Scheduled->value, MaintenanceStatus::InProgress->value])
+            ->whereDate('scheduled_at', $nextDate->toDateString())
+            ->exists();
+
+        if (! $alreadyScheduled) {
+            $asset->maintenances()->create([
+                'service_contact_id' => $maintenance->service_contact_id ?? $asset->service_contact_id,
+                'scheduled_at' => $nextDate,
+                'description' => "Maintenance rutin setiap {$asset->maintenance_interval_months} bulan.",
+                'created_by' => auth()->id(),
+            ]);
+        }
     }
 
     public function delete(AssetMaintenance $maintenance): void

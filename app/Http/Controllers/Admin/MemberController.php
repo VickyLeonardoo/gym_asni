@@ -46,7 +46,7 @@ class MemberController extends Controller
     {
         $transaction = $service->createRegistration($request->validated());
 
-        return redirect()->route('transactions.index')->with('status', "Registration transaction #{$transaction->id} created. Verify it to create member data.");
+        return redirect()->route('transactions.index')->with('status', "Transaksi pendaftaran #{$transaction->id} berhasil dibuat. Verifikasi untuk membuat data member.");
     }
 
     public function show(Member $member): View
@@ -69,7 +69,7 @@ class MemberController extends Controller
     {
         $service->update($member, $request->validated());
 
-        return redirect()->route('members.show', $member)->with('status', 'Member updated successfully.');
+        return redirect()->route('members.show', $member)->with('status', 'Member berhasil diperbarui.');
     }
 
     public function destroy(Member $member, MemberService $service): RedirectResponse
@@ -77,7 +77,7 @@ class MemberController extends Controller
         $this->authorize('delete', $member);
         $service->delete($member);
 
-        return redirect()->route('members.index')->with('status', 'Member archived successfully.');
+        return redirect()->route('members.index')->with('status', 'Member berhasil diarsipkan.');
     }
 
     public function restore(string $member, MemberService $service): RedirectResponse
@@ -86,6 +86,6 @@ class MemberController extends Controller
         $this->authorize('restore', $member);
         $service->restore($member);
 
-        return redirect()->route('members.archived')->with('status', 'Member restored successfully.');
+        return redirect()->route('members.archived')->with('status', 'Member berhasil dipulihkan.');
     }
 }

@@ -12,6 +12,12 @@ enum AssetCondition: string
 
     public function label(): string
     {
-        return ucfirst($this->value);
+        return match ($this) {
+            self::Excellent => 'Sangat Baik',
+            self::Good => 'Baik',
+            self::Fair => 'Cukup',
+            self::Poor => 'Buruk',
+            self::Broken => 'Rusak',
+        };
     }
 }

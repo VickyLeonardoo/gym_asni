@@ -44,7 +44,7 @@ class MembershipPlanController extends Controller
     {
         MembershipPlan::query()->create($this->data($request->validated()));
 
-        return redirect()->route('packages.index')->with('status', 'Package created successfully.');
+        return redirect()->route('packages.index')->with('status', 'Paket berhasil dibuat.');
     }
 
     public function edit(MembershipPlan $package): View
@@ -58,7 +58,7 @@ class MembershipPlanController extends Controller
     {
         $package->update($this->data($request->validated()));
 
-        return redirect()->route('packages.index')->with('status', 'Package updated successfully.');
+        return redirect()->route('packages.index')->with('status', 'Paket berhasil diperbarui.');
     }
 
     public function destroy(MembershipPlan $package): RedirectResponse
@@ -66,12 +66,12 @@ class MembershipPlanController extends Controller
         $this->authorize('delete', $package);
 
         if ($package->memberships()->exists()) {
-            return back()->with('status', 'Package already has memberships. Set it inactive instead of deleting it.');
+            return back()->with('status', 'Paket sudah dipakai membership. Nonaktifkan paket daripada menghapusnya.');
         }
 
         $package->delete();
 
-        return redirect()->route('packages.index')->with('status', 'Package deleted successfully.');
+        return redirect()->route('packages.index')->with('status', 'Paket berhasil dihapus.');
     }
 
     private function data(array $validated): array

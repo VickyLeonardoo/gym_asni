@@ -49,7 +49,7 @@ class MembershipController extends Controller
     {
         $transaction = $service->createRenewal($member, $request->validated());
 
-        return redirect()->route('transactions.index')->with('status', "Renewal transaction #{$transaction->id} created. Verify it to finalize renewal.");
+        return redirect()->route('transactions.index')->with('status', "Transaksi perpanjangan #{$transaction->id} berhasil dibuat. Verifikasi untuk menyelesaikan perpanjangan.");
     }
 
     public function show(Membership $membership): View

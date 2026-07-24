@@ -10,6 +10,10 @@ enum PaymentStatus: string
 
     public function label(): string
     {
-        return ucfirst($this->value);
+        return match ($this) {
+            self::Pending => 'Menunggu',
+            self::Verified => 'Terverifikasi',
+            self::Rejected => 'Ditolak',
+        };
     }
 }

@@ -17,7 +17,6 @@ class StoreMaintenanceRequest extends FormRequest
         return [
             'service_contact_id' => ['nullable', 'exists:service_contacts,id'],
             'scheduled_at' => ['required', 'date'],
-            'cost' => ['nullable', 'numeric', 'min:0'],
             'description' => ['required', 'string', 'max:2000'],
         ];
     }

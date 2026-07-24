@@ -10,8 +10,8 @@ enum MembershipTransactionType: string
     public function label(): string
     {
         return match ($this) {
-            self::Registration => 'New Member',
-            self::Renewal => 'Renewal',
+            self::Registration => 'Member Baru',
+            self::Renewal => 'Perpanjangan',
         };
     }
 }

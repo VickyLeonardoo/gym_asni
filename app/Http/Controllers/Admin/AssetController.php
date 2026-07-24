@@ -53,7 +53,7 @@ class AssetController extends Controller
     {
         $asset = $service->create($request->validated());
 
-        return redirect()->route('assets.show', $asset)->with('status', 'Asset created successfully.');
+        return redirect()->route('assets.show', $asset)->with('status', 'Aset berhasil dibuat.');
     }
 
     public function show(Asset $asset): View
@@ -81,7 +81,7 @@ class AssetController extends Controller
     {
         $service->update($asset, $request->validated());
 
-        return redirect()->route('assets.show', $asset)->with('status', 'Asset updated successfully.');
+        return redirect()->route('assets.show', $asset)->with('status', 'Aset berhasil diperbarui.');
     }
 
     public function destroy(Asset $asset, AssetService $service): RedirectResponse
@@ -89,7 +89,7 @@ class AssetController extends Controller
         $this->authorize('delete', $asset);
         $service->delete($asset);
 
-        return redirect()->route('assets.index')->with('status', 'Asset archived successfully.');
+        return redirect()->route('assets.index')->with('status', 'Aset berhasil diarsipkan.');
     }
 
     public function restore(string $asset, AssetService $service): RedirectResponse
@@ -98,6 +98,6 @@ class AssetController extends Controller
         $this->authorize('restore', $asset);
         $service->restore($asset);
 
-        return redirect()->route('assets.archived')->with('status', 'Asset restored successfully.');
+        return redirect()->route('assets.archived')->with('status', 'Aset berhasil dipulihkan.');
     }
 }

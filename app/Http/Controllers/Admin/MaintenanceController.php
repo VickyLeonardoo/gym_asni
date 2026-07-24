@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\MaintenanceStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Maintenance\StoreMaintenanceRequest;
+use App\Http\Requests\Maintenance\CompleteMaintenanceRequest;
 use App\Http\Requests\Maintenance\UpdateMaintenanceRequest;
 use App\Models\Asset;
 use App\Models\AssetMaintenance;
@@ -40,7 +41,7 @@ class MaintenanceController extends Controller
     {
         $service->create($asset, $request->validated());
 
-        return redirect()->route('assets.show', $asset)->with('status', 'Maintenance scheduled successfully.');
+        return redirect()->route('assets.show', $asset)->with('status', 'Maintenance berhasil dijadwalkan.');
     }
 
     public function edit(AssetMaintenance $maintenance): View
@@ -58,15 +59,21 @@ class MaintenanceController extends Controller
     {
         $service->update($maintenance, $request->validated());
 
-        return redirect()->route('maintenances.index')->with('status', 'Maintenance updated successfully.');
+        return redirect()->route('maintenances.index')->with('status', 'Maintenance berhasil diperbarui.');
     }
 
-    public function complete(AssetMaintenance $maintenance, MaintenanceService $service): RedirectResponse
+    public function completeForm(AssetMaintenance $maintenance): View
     {
         $this->authorize('update', $maintenance);
-        $service->complete($maintenance);
 
-        return back()->with('status', 'Maintenance completed successfully.');
+        return view('maintenances.complete', ['maintenance' => $maintenance->load('asset')]);
+    }
+
+    public function complete(CompleteMaintenanceRequest $request, AssetMaintenance $maintenance, MaintenanceService $service): RedirectResponse
+    {
+        $service->complete($maintenance, $request->validated());
+
+        return redirect()->route('assets.show', $maintenance->asset)->with('status', 'Maintenance berhasil diselesaikan dan jadwal rutin berikutnya telah dibuat.');
     }
 
     public function destroy(AssetMaintenance $maintenance, MaintenanceService $service): RedirectResponse
@@ -74,6 +81,6 @@ class MaintenanceController extends Controller
         $this->authorize('delete', $maintenance);
         $service->delete($maintenance);
 
-        return back()->with('status', 'Maintenance deleted successfully.');
+        return back()->with('status', 'Maintenance berhasil dihapus.');
     }
 }

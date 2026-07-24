@@ -42,6 +42,7 @@ class GymManagementWorkflowTest extends TestCase
             'gender' => 'female',
             'membership_plan_id' => $plan->id,
             'starts_at' => '2026-07-03',
+            'amount' => 250000,
             'method' => 'bank_transfer',
             'proof' => UploadedFile::fake()->create('proof.pdf', 32, 'application/pdf'),
         ]);
@@ -62,6 +63,7 @@ class GymManagementWorkflowTest extends TestCase
         $renewResponse = $this->actingAs($admin)->post(route('memberships.store', $member), [
             'membership_plan_id' => $plan->id,
             'starts_at' => '2026-08-02',
+            'amount' => 250000,
             'method' => 'bank_transfer',
             'proof' => UploadedFile::fake()->create('proof.pdf', 32, 'application/pdf'),
         ]);
@@ -106,28 +108,37 @@ class GymManagementWorkflowTest extends TestCase
             'location' => 'Main Floor',
         ]);
 
-        $asset = Asset::query()->firstOrFail();
+        $asset = Asset::query()->where('name', 'Treadmill A1')->firstOrFail();
         $assetResponse->assertRedirect(route('assets.show', $asset));
         $this->assertCount(1, $asset->conditionLogs);
 
         $maintenanceResponse = $this->actingAs($admin)->post(route('maintenances.store', $asset), [
             'scheduled_at' => '2026-07-04',
-            'cost' => 125000,
             'description' => 'Monthly belt inspection.',
         ]);
 
-        $maintenance = AssetMaintenance::query()->firstOrFail();
+        $maintenance = AssetMaintenance::query()->where('asset_id', $asset->id)->latest('id')->firstOrFail();
         $maintenanceResponse->assertRedirect(route('assets.show', $asset));
         $this->assertSame(AssetStatus::Maintenance, $asset->refresh()->status);
 
         $this->actingAs($admin)
-            ->patch(route('maintenances.complete', $maintenance))
+            ->patch(route('maintenances.complete', $maintenance), [
+                'completed_at' => '2026-07-05',
+                'cost' => 125000,
+                'resolution' => 'Belt inspected and adjusted.',
+            ])
             ->assertRedirect();
 
         $this->assertSame(AssetStatus::Available, $asset->refresh()->status);
         $this->assertSame(MaintenanceStatus::Completed, $maintenance->refresh()->status);
         $this->assertNotNull($maintenance->completed_at);
+        $this->assertSame('125000.00', $maintenance->cost);
         $this->assertSame($maintenance->completed_at->toDateString(), $asset->lastMaintenanceDate()->toDateString());
+        $this->assertDatabaseHas('asset_maintenances', [
+            'asset_id' => $asset->id,
+            'scheduled_at' => '2026-09-05',
+            'status' => MaintenanceStatus::Scheduled->value,
+        ]);
 
         $this->actingAs($admin)
             ->delete(route('assets.destroy', $asset))
@@ -140,5 +151,56 @@ class GymManagementWorkflowTest extends TestCase
             ->assertRedirect(route('assets.archived'));
 
         $this->assertFalse($asset->refresh()->trashed());
+    }
+
+    public function test_payment_amount_must_be_positive_and_equal_to_plan_fee(): void
+    {
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+        $plan = MembershipPlan::query()->create([
+            'name' => 'Monthly',
+            'duration_days' => 30,
+            'price' => 250000,
+            'is_active' => true,
+        ]);
+        $payload = [
+            'name' => 'Ayu Member',
+            'phone' => '08123456789',
+            'membership_plan_id' => $plan->id,
+            'starts_at' => '2026-07-03',
+        ];
+        $transactionCount = MembershipTransaction::query()->count();
+
+        $this->actingAs($admin)
+            ->post(route('members.store'), [...$payload, 'amount' => 0])
+            ->assertSessionHasErrors('amount');
+
+        $this->actingAs($admin)
+            ->post(route('members.store'), [...$payload, 'amount' => 200000])
+            ->assertSessionHasErrors('amount');
+
+        $this->assertDatabaseCount('membership_transactions', $transactionCount);
+    }
+
+    public function test_maintenance_cannot_be_completed_without_actual_cost_and_resolution(): void
+    {
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+        $asset = Asset::query()->create([
+            'asset_code' => 'AST-TEST',
+            'name' => 'Treadmill Test',
+            'category' => 'Cardio',
+            'maintenance_interval_months' => 2,
+            'status' => AssetStatus::Maintenance,
+            'condition' => AssetCondition::Good,
+        ]);
+        $maintenance = $asset->maintenances()->create([
+            'scheduled_at' => '2026-07-04',
+            'description' => 'Routine inspection.',
+        ]);
+
+        $this->actingAs($admin)
+            ->patch(route('maintenances.complete', $maintenance), ['completed_at' => '2026-07-05'])
+            ->assertSessionHasErrors(['cost', 'resolution']);
+
+        $this->assertSame(MaintenanceStatus::Scheduled, $maintenance->refresh()->status);
     }
 }

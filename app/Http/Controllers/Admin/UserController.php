@@ -35,7 +35,7 @@ class UserController extends Controller
     {
         $service->create($request->validated());
 
-        return redirect()->route('users.index')->with('status', 'User created successfully.');
+        return redirect()->route('users.index')->with('status', 'Pengguna berhasil dibuat.');
     }
 
     public function edit(User $user): View
@@ -49,7 +49,7 @@ class UserController extends Controller
     {
         $service->update($user, $request->validated());
 
-        return redirect()->route('users.index')->with('status', 'User updated successfully.');
+        return redirect()->route('users.index')->with('status', 'Pengguna berhasil diperbarui.');
     }
 
     public function destroy(User $user, UserService $service): RedirectResponse
@@ -57,6 +57,6 @@ class UserController extends Controller
         $this->authorize('delete', $user);
         $service->delete($user);
 
-        return redirect()->route('users.index')->with('status', 'User deleted successfully.');
+        return redirect()->route('users.index')->with('status', 'Pengguna berhasil dihapus.');
     }
 }
